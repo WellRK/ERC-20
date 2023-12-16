@@ -7,23 +7,30 @@ pragma solidity 0.8.0;
 contract ERC20 {
     mapping (address => uint256) _balances; // Balanço do contrato
     mapping (address => mapping (address => uint256)) _allowance; // endereço que pode ser utilizado por uma conta, e a quantidade de tokens que podem ser gastos pela conta
-    uint256 _totalSupply;
+    uint256 immutable _totalSupply;
+
+    uint8 constant DECIMALS = 18;
 
     event Transfer(address indexed _to, uint256 indexed _value); // Evento para conversar com o bloco atribuindo o endereço e amount para transferencia
-    event Approval(address indexed _owner, address indexed _spender, uint256 _value)
+    event Approval(address indexed _owner, address indexed _spender, uint256 _value);
 
-    constructor() {}
+    constructor() {
 
-    function name() public view returns (string memory) {
+        _balances[msg.sender] = 21000000 *10 ** DECIMALS;
+        _totalSupply = _balances[msg.sender];
+
+    }
+
+    function name() public pure returns (string memory) {
             return 'ERC-BEGGIN';
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() public pure returns (string memory) {
             return 'ERCB';
     }
 
-    function decimals() public view  returns (uint256) {
-        return 18;
+    function decimals() public pure  returns (uint256) {
+        return DECIMALS;
     }
 
     function totalSupply() public view  returns (uint256) {
@@ -34,7 +41,7 @@ contract ERC20 {
         return _balances[_owner];
     }
 
-    function transfer(address _to, uint256 value) public returns (bool) {
+    function transfer(address _to, uint256 _value) public returns (bool) {
         require(_balances[msg.sender] >= _value, 'No balance');
 
 
@@ -68,14 +75,14 @@ contract ERC20 {
 
 
     function approve(address _spender, uint256 _value) public returns (bool) {
-        _allowance[msg.sender][_spender] += value;
+        _allowance[msg.sender][_spender] = _value;
 
         emit Approval(msg.sender, _spender, _value);
 
         return true;
     }
 
-    function allowance(address _owner, address _spender)  returns (uint256) {
+    function allowance(address _owner, address _spender) public view returns (uint256) {
         
         return  _allowance[_owner][_spender];
 
